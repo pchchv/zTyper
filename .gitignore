@@ -4,3 +4,5 @@
 SDL2.dll
 zig-cache/
 zig-out/
+.zig-cache/
+.zig-out/
