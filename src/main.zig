@@ -12,4 +12,8 @@ pub fn main() anyerror!void {
         return error.SDLInitializationFailed;
     }
     defer c.SDL_Quit();
+
+    const start_ticks = c.SDL_GetTicks();
+    const init_ticks = c.SDL_GetTicks();
+    std.debug.print("app init complete in {d} ticks\n", .{init_ticks - start_ticks});
 }
