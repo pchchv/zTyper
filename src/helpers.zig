@@ -43,4 +43,14 @@ pub const EditableText = struct {
     position: Vector2 = .{},
     size: Vector2 = .{ .x = 300 },
     cursor_index: usize = 0,
+
+    pub fn init(allocator: *std.mem.Allocator) Self {
+        return Self{
+            .text = std.ArrayList(u8).init(allocator),
+        };
+    }
+
+    pub fn deinit(self: *Self) void {
+        self.text.deinit();
+    }
 };
