@@ -16,4 +16,7 @@ pub fn main() anyerror!void {
     const start_ticks = c.SDL_GetTicks();
     const init_ticks = c.SDL_GetTicks();
     std.debug.print("app init complete in {d} ticks\n", .{init_ticks - start_ticks});
+
+    var loading_arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    loading_arena.deinit();
 }
