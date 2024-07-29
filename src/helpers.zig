@@ -1,3 +1,5 @@
+const std = @import("std");
+
 pub fn lerpf(start: f32, end: f32, t: f32) f32 {
     return (start * (1.0 - t)) + (end * t);
 }
@@ -32,4 +34,13 @@ pub const Vector2 = struct {
         }
         return 0;
     }
+};
+
+pub const EditableText = struct {
+    const Self = @This();
+    text: std.ArrayList(u8),
+    is_active: bool = false,
+    position: Vector2 = .{},
+    size: Vector2 = .{ .x = 300 },
+    cursor_index: usize = 0,
 };
