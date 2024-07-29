@@ -1,7 +1,12 @@
 const std = @import("std");
+const c = @import("c.zig");
 const helpers = @import("helpers.zig");
+
 const EditableText = helpers.EditableText;
+
 const TYPEROO_LINE_WIDTH = 66;
+const TYPEROO_NUM_BACKSPACE = 8;
+
 const Line = struct {
     start: usize = 0,
     end: usize = 0,
@@ -35,5 +40,21 @@ pub const App = struct {
         self.typesetter.deinit();
         self.typed.deinit();
         self.lines.deinit();
+    }
+
+    fn backspace_allowed(self: *Self) bool {
+        return self.backspace_used < TYPEROO_NUM_BACKSPACE;
+    }
+
+    fn check_backspace(self: *Self, event: c.SDL_Event) bool {
+        if (!self.backspace_allowed()) return false;
+        const name = c.SDL_GetKeyName(event.key.keysym.sym);
+        var len: usize = 0;
+        while (name[len] != 0) : (len += 1) {}
+        if (len == 0) return false;
+        if (std.mem.eql(u8, name[0..len], "Backspace")) {
+            return true;
+        }
+        return false;
     }
 };
