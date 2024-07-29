@@ -57,4 +57,13 @@ pub const App = struct {
         }
         return false;
     }
+
+    fn print_current_day(self: *Self) void {
+        _ = self;
+        const epoch_seconds = std.time.epoch.EpochSeconds{ .secs = @intCast(u64) };
+        const epoch_day = epoch_seconds.getEpochDay();
+        const year_day = epoch_day.calculateYearDay();
+        const month_day = year_day.calculateMonthDay();
+        std.debug.print("Year: {d}, Month: {d}, Day: {d}\n", .{ year_day.year, @intFromEnum(month_day.month), month_day.day_index + 1 });
+    }
 };
