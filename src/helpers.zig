@@ -53,4 +53,42 @@ pub const EditableText = struct {
     pub fn deinit(self: *Self) void {
         self.text.deinit();
     }
+
+    pub fn set_text(self: *Self, str: []const u8) void {
+        self.text.shrinkRetainingCapacity(0);
+        self.text.appendSlice(str) catch unreachable;
+        self.cursor_index = str.len;
+    }
+
+    pub fn handle_inputs(self: *Self, keys: []u8) void {
+        for (keys) |k| {
+            switch (k) {
+                8 => {
+                    if (self.cursor_index > 0) {
+                        _ = self.text.orderedRemove(self.cursor_index - 1);
+                        self.cursor_index -= 1;
+                    }
+                },
+                127 => {
+                    if (self.cursor_index < self.text.items.len) {
+                        _ = self.text.orderedRemove(self.cursor_index);
+                    }
+                },
+                128 => {
+                    if (self.cursor_index > 0) {
+                        self.cursor_index -= 1;
+                    }
+                },
+                129 => {
+                    if (self.cursor_index < self.text.items.len) {
+                        self.cursor_index += 1;
+                    }
+                },
+                else => {
+                    self.text.insert(self.cursor_index, k) catch unreachable;
+                    self.cursor_index += 1;
+                },
+            }
+        }
+    }
 };
