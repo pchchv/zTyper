@@ -141,4 +141,25 @@ pub const App = struct {
             }
         }
     }
+
+    pub fn handle_inputs(self: *Self, event: c.SDL_Event) void {
+        if (event.type == c.SDL_KEYDOWN and event.key.keysym.sym == c.SDLK_END)
+            self.quit = true;
+        self.inputs.mouse.handle_input(event, self.ticks, &self.camera);
+        if (event.type == c.SDL_KEYDOWN) {
+            for (INPUT_MAPPING) |map| {
+                if (event.key.keysym.sym == map.key) self.inputs.get_key(map.input).set_down(self.ticks);
+            }
+            if (helpers.get_char(event)) |k| self.inputs.type_key(k);
+            if (self.check_backspace(event)) self.inputs.type_key(8);
+        } else if (event.type == c.SDL_KEYUP) {
+            for (INPUT_MAPPING) |map| {
+                if (event.key.keysym.sym == map.key) self.inputs.get_key(map.input).set_release();
+            }
+        }
+    }
+
+    pub fn reset_inputs(self: *Self) void {
+        self.inputs.reset();
+    }
 };
