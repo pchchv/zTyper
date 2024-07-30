@@ -7,6 +7,30 @@ const EditableText = helpers.EditableText;
 const TYPEROO_LINE_WIDTH = 66;
 const TYPEROO_NUM_BACKSPACE = 8;
 const NOTEBOOK_PATH = "C:\\Users\\user\\notebook.txt";
+const INPUT_KEYS_COUNT = @typeInfo(InputKey).Enum.fields.len;
+
+const InputKey = enum {
+    shift,
+    tab,
+    enter,
+    space,
+    escape,
+    ctrl,
+};
+
+const InputMap = struct {
+    key: c.SDL_Keycode,
+    input: InputKey,
+};
+
+const INPUT_MAPPING = [_]InputMap{
+    .{ .key = c.SDLK_LSHIFT, .input = .shift },
+    .{ .key = c.SDLK_LCTRL, .input = .ctrl },
+    .{ .key = c.SDLK_TAB, .input = .tab },
+    .{ .key = c.SDLK_RETURN, .input = .enter },
+    .{ .key = c.SDLK_SPACE, .input = .space },
+    .{ .key = c.SDLK_ESCAPE, .input = .escape },
+};
 
 const Line = struct {
     start: usize = 0,
