@@ -44,6 +44,19 @@ pub const InputState = struct {
     mouse: MouseState = MouseState{},
     typed: [TYPING_BUFFER_SIZE]u8 = [_]u8{0} ** TYPING_BUFFER_SIZE,
     keys: [INPUT_KEYS_COUNT]SingleInput = [_]SingleInput{.{}} ** INPUT_KEYS_COUNT,
+
+    pub fn get_key(self: *Self, key: InputKey) *SingleInput {
+        return &self.keys[@intFromEnum(key)];
+    }
+
+    pub fn type_key(self: *Self, k: u8) void {
+        if (self.num_typed >= TYPING_BUFFER_SIZE) {
+            std.debug.print("Typing buffer already filled.\n", .{});
+            return;
+        }
+        self.typed[self.num_typed] = k;
+        self.num_typed += 1;
+    }
 };
 
 const Line = struct {
