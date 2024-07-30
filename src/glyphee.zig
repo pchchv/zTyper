@@ -147,4 +147,56 @@ pub const TypeSetter = struct {
         self.glyphs.append(new_glyph) catch unreachable;
         return Vector2{ .x = glyph.xadvance };
     }
+
+    pub fn draw_text_world(self: *Self, pos: Vector2, text: []const u8) void {
+        self.draw_text_world_font(pos, text, DEFAULT_FONT);
+    }
+
+    pub fn draw_text_world_font(self: *Self, pos: Vector2, text: []const u8, font: FontType) void {
+        self.draw_text_width_font(self.camera.world_pos_to_screen(pos), text, self.camera, 1000000.0, font);
+    }
+
+    pub fn draw_text_world_font_color(self: *Self, pos: Vector2, text: []const u8, font: FontType, color: Vector4_gl) void {
+        self.draw_text_width_color_font(pos, text, self.camera, 1000000.0, color, font);
+    }
+
+    pub fn draw_text_world_centered(self: *Self, pos: Vector2, text: []const u8) void {
+        self.draw_text_world_centered_font(pos, text, DEFAULT_FONT);
+    }
+
+    pub fn draw_text_world_centered_font(self: *Self, pos: Vector2, text: []const u8, font: FontType) void {
+        self.draw_text_world_centered_font_color(pos, text, font, BLACK);
+    }
+
+    pub fn draw_text_width_world(self: *Self, pos: Vector2, text: []const u8, width: f32) void {
+        self.draw_text_width(self.camera.world_pos_to_screen(pos), text, self.camera, width);
+    }
+
+    pub fn draw_text_width_camera(self: *Self, pos: Vector2, text: []const u8, width: f32, camera: *const Camera) void {
+        self.draw_text_width(camera.world_pos_to_screen(pos), text, camera, width);
+    }
+
+    pub fn draw_text_width_world_color(self: *Self, pos: Vector2, text: []const u8, width: f32, color: Vector4_gl) void {
+        self.draw_text_width_color(self.camera.world_pos_to_screen(pos), text, self.camera, width, color);
+    }
+
+    pub fn draw_text(self: *Self, pos: Vector2, text: []const u8, camera: *const Camera) void {
+        self.draw_text_width(pos, text, camera, 1000000.0);
+    }
+
+    pub fn draw_text_width(self: *Self, pos: Vector2, text: []const u8, camera: *const Camera, width: f32) void {
+        self.draw_text_width_font(pos, text, camera, width, DEFAULT_FONT);
+    }
+
+    pub fn draw_text_width_font_world(self: *Self, pos: Vector2, text: []const u8, width: f32, font: FontType) void {
+        self.draw_text_width_color_font(self.camera.world_pos_to_screen(pos), text, self.camera, width, BLACK, font);
+    }
+
+    pub fn draw_text_width_font(self: *Self, pos: Vector2, text: []const u8, camera: *const Camera, width: f32, font: FontType) void {
+        self.draw_text_width_color_font(pos, text, camera, width, BLACK, font);
+    }
+
+    pub fn draw_text_width_color(self: *Self, pos: Vector2, text: []const u8, camera: *const Camera, width: f32, color: Vector4_gl) void {
+        self.draw_text_width_color_font(pos, text, camera, width, color, DEFAULT_FONT);
+    }
 };
