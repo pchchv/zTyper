@@ -57,6 +57,12 @@ pub const InputState = struct {
         self.typed[self.num_typed] = k;
         self.num_typed += 1;
     }
+
+    pub fn reset(self: *Self) void {
+        for (self.keys) |*key| key.reset();
+        self.mouse.reset_mouse();
+        self.num_typed = 0;
+    }
 };
 
 const Line = struct {
