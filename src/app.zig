@@ -27,7 +27,6 @@ pub const App = struct {
 
     pub fn init(self: *Self) !void {
         try self.typesetter.init(&self.camera, self.allocator);
-
         var buf: [TYPEROO_LINE_WIDTH]u8 = undefined;
         var i: usize = 0;
         while (i < TYPEROO_LINE_WIDTH) : (i += 1) buf[i] = 'a';
@@ -60,7 +59,7 @@ pub const App = struct {
 
     fn print_current_day(self: *Self) void {
         _ = self;
-        const epoch_seconds = std.time.epoch.EpochSeconds{ .secs = @intCast(u64) };
+        const epoch_seconds = std.time.epoch.EpochSeconds{ .secs = @as(u64, std.time.timestamp()) };
         const epoch_day = epoch_seconds.getEpochDay();
         const year_day = epoch_day.calculateYearDay();
         const month_day = year_day.calculateMonthDay();
