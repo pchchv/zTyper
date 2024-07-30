@@ -1,10 +1,13 @@
 const std = @import("std");
 const c = @import("c.zig");
 const helpers = @import("helpers.zig");
+const glyph_lib = @import("glyphee.zig");
 const constants = @import("constants.zig");
 
+const Camera = helpers.Camera;
 const MouseState = helpers.MouseState;
 const SingleInput = helpers.SingleInput;
+const TypeSetter = glyph_lib.TypeSetter;
 const EditableText = helpers.EditableText;
 
 const TYPEROO_NUM_LINES = 5;
@@ -72,7 +75,17 @@ const Line = struct {
 
 pub const App = struct {
     const Self = @This();
+    typesetter: TypeSetter = undefined,
+    camera: Camera = .{},
+    allocator: *std.mem.Allocator,
+    arena: *std.mem.Allocator,
+    ticks: u32 = 0,
+    quit: bool = false,
+    inputs: InputState = .{},
     typed: EditableText,
+    lines: std.ArrayList(Line),
+    backspace_used: usize = 0,
+    total_line_width: f32 = 0.0,
 
     pub fn new(allocator: *std.mem.Allocator, arena: *std.mem.Allocator) Self {
         return Self{
