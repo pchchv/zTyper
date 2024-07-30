@@ -199,4 +199,25 @@ pub const TypeSetter = struct {
     pub fn draw_text_width_color(self: *Self, pos: Vector2, text: []const u8, camera: *const Camera, width: f32, color: Vector4_gl) void {
         self.draw_text_width_color_font(pos, text, camera, width, color, DEFAULT_FONT);
     }
+
+    pub fn draw_text_world_centered_font_color(self: *Self, pos: Vector2, text: []const u8, font: FontType, color: Vector4_gl) void {
+        const width = self.get_text_width_font(text, font);
+        const c_pos = Vector2.subtract(pos, width.scaled(0.5));
+        self.draw_text_world_font_color(c_pos, text, font, color);
+    }
+
+    pub fn draw_text_width_color_font(self: *Self, pos: Vector2, text: []const u8, camera: *const Camera, width: f32, color: Vector4_gl, font: FontType) void {
+        var offsets = Vector2{};
+        var new_line = false;
+        for (text) |char| {
+            const char_offset = self.draw_char_color_font(Vector2.add(pos, offsets), char, 1, camera, color, font);
+            offsets = Vector2.add(offsets, char_offset);
+            if (offsets.x > width) new_line = true;
+            if (new_line and char == ' ') {
+                offsets.x = 0.0;
+                offsets.y += FONT_SIZE * 1.2;
+                new_line = false;
+            }
+        }
+    }
 };
