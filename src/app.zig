@@ -1,12 +1,18 @@
 const std = @import("std");
 const c = @import("c.zig");
 const helpers = @import("helpers.zig");
+const constants = @import("constants.zig");
 
+const MouseState = helpers.MouseState;
+const SingleInput = helpers.SingleInput;
 const EditableText = helpers.EditableText;
 
+const TYPEROO_NUM_LINES = 5;
 const TYPEROO_LINE_WIDTH = 66;
+const TYPING_BUFFER_SIZE = 16;
 const TYPEROO_NUM_BACKSPACE = 8;
 const NOTEBOOK_PATH = "C:\\Users\\user\\notebook.txt";
+
 const INPUT_KEYS_COUNT = @typeInfo(InputKey).Enum.fields.len;
 
 const InputKey = enum {
@@ -30,6 +36,14 @@ const INPUT_MAPPING = [_]InputMap{
     .{ .key = c.SDLK_RETURN, .input = .enter },
     .{ .key = c.SDLK_SPACE, .input = .space },
     .{ .key = c.SDLK_ESCAPE, .input = .escape },
+};
+
+pub const InputState = struct {
+    const Self = @This();
+    num_typed: usize = 0,
+    mouse: MouseState = MouseState{},
+    typed: [TYPING_BUFFER_SIZE]u8 = [_]u8{0} ** TYPING_BUFFER_SIZE,
+    keys: [INPUT_KEYS_COUNT]SingleInput = [_]SingleInput{.{}} ** INPUT_KEYS_COUNT,
 };
 
 const Line = struct {
