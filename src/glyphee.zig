@@ -4,13 +4,27 @@ const c = @import("c.zig");
 const helpers = @import("helpers.zig");
 
 const Camera = helpers.Camera;
+const Vector2 = helpers.Vector2;
 const Vector4_gl = helpers.Vector4_gl;
 
 const NUM_FONTS = @typeInfo(FontType).Enum.fields.len;
+const DISPLAY_FONT_FILE = @embedFile("../data/fonts/Leander/Leander.ttf");
+const INFO_FONT_FILE = @embedFile("../data/fonts/Goudy/goudy_bookletter_1911.otf");
+const DEBUG_FONT_FILE = @embedFile("../data/fonts/JetBrainsMono/ttf/JetBrainsMono-Light.ttf");
 
 const DEFAULT_FONT: FontType = .debug;
 
 const GLYPH_CAPACITY = 2048;
+
+pub const FONT_TEX_SIZE = 512;
+pub const FONT_SIZE = 24.0;
+
+
+const FONT_FILES = [NUM_FONTS][:0]const u8{
+    DEBUG_FONT_FILE,
+    DISPLAY_FONT_FILE,
+    INFO_FONT_FILE,
+};
 
 const Glyph = struct {
     char: u8,
@@ -80,5 +94,14 @@ pub const TypeSetter = struct {
             row += @as(usize, num_rows_used);
             glyphs_used += 96;
         }
+    }
+
+    pub fn get_char_offset(self: *Self, char: u8) Vector2 {
+        return self.get_char_offset_font(char, DEFAULT_FONT);
+    }
+
+    pub fn get_char_offset_font(self: *Self, char: u8, font: FontType) Vector2 {
+        const glyph = self.get_char_glyph(char, font);
+        return Vector2{ .x = glyph.xadvance };
     }
 };
