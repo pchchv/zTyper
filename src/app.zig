@@ -5,6 +5,7 @@ const glyph_lib = @import("glyphee.zig");
 const constants = @import("constants.zig");
 
 const Camera = helpers.Camera;
+const Vector2 = helpers.Vector2;
 const MouseState = helpers.MouseState;
 const SingleInput = helpers.SingleInput;
 const TypeSetter = glyph_lib.TypeSetter;
@@ -14,6 +15,7 @@ const TYPEROO_NUM_LINES = 5;
 const TYPEROO_LINE_WIDTH = 66;
 const TYPING_BUFFER_SIZE = 16;
 const TYPEROO_NUM_BACKSPACE = 8;
+const TYPEROO_FONT_WIDTH = 11.6129035;
 const NOTEBOOK_PATH = "C:\\Users\\user\\notebook.txt";
 
 const INPUT_KEYS_COUNT = @typeInfo(InputKey).Enum.fields.len;
@@ -223,5 +225,26 @@ pub const App = struct {
         }
         const line = Line{ .start = start, .end = self.typed.text.items.len };
         self.lines.append(line) catch unreachable;
+    }
+
+    pub fn update(self: *Self, ticks: u32, arena: *std.mem.Allocator) void {
+        self.ticks = ticks;
+        self.arena = arena;
+        self.typed.handle_inputs(self.inputs.typed[0..self.inputs.num_typed]);
+        self.check_line();
+        const xpos = (constants.DEFAULT_WINDOW_WIDTH - self.total_line_width) / 2.0;
+        var ypos = 0.5 * constants.DEFAULT_WINDOW_HEIGHT;
+        var i: usize = self.lines.items.len - 1;
+        var lines_typed: usize = 0;
+        while (true) : (i -= 1) {
+            const line = self.lines.items[i];
+            const alpha: f32 = 1.0 - (@as(f32, lines_typed) / @as(f32, TYPEROO_NUM_LINES));
+            self.typesetter.draw_text_world_font_color(.{ .x = xpos, .y = ypos }, self.typed.text.items[line.start..line.end], .debug, .{ .x = 254.0 / 255.0, .y = 206.0 / 255.0, .z = 0.0, .w = alpha });
+            ypos -= 1.2 * glyph_lib.FONT_SIZE;
+            if (i == 0) break;
+            lines_typed += 1;
+            if (lines_typed > TYPEROO_NUM_LINES) break;
+        }
+        self.update_backspace();
     }
 };
