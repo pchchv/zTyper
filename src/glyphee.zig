@@ -13,12 +13,12 @@ const INFO_FONT_FILE = @embedFile("../data/fonts/Goudy/goudy_bookletter_1911.otf
 const DEBUG_FONT_FILE = @embedFile("../data/fonts/JetBrainsMono/ttf/JetBrainsMono-Light.ttf");
 
 const DEFAULT_FONT: FontType = .debug;
+const BLACK: Vector4_gl = .{ .x = 24.0 / 255.0, .y = 24.0 / 255.0, .z = 24.0 / 255.0, .w = 1.0 };
 
 const GLYPH_CAPACITY = 2048;
 
 pub const FONT_TEX_SIZE = 512;
 pub const FONT_SIZE = 24.0;
-
 
 const FONT_FILES = [NUM_FONTS][:0]const u8{
     DEBUG_FONT_FILE,
@@ -103,5 +103,17 @@ pub const TypeSetter = struct {
     pub fn get_char_offset_font(self: *Self, char: u8, font: FontType) Vector2 {
         const glyph = self.get_char_glyph(char, font);
         return Vector2{ .x = glyph.xadvance };
+    }
+
+    pub fn draw_char_world(self: *Self, pos: Vector2, char: u8) Vector2 {
+        return self.draw_char(self.camera.world_pos_to_screen(pos), char, self.camera);
+    }
+
+    pub fn draw_char(self: *Self, pos: Vector2, char: u8, camera: *const Camera) Vector2 {
+        return self.draw_char_color(pos, char, 0.9, camera, BLACK);
+    }
+
+    pub fn draw_char_color(self: *Self, pos: Vector2, char: u8, z: f32, camera: *const Camera, color: Vector4_gl) Vector2 {
+        return self.draw_char_color_font(pos, char, z, camera, color, DEFAULT_FONT);
     }
 };
