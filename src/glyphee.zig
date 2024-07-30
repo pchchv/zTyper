@@ -220,4 +220,18 @@ pub const TypeSetter = struct {
             }
         }
     }
+
+    pub fn free_texture_data(self: *Self) void {
+        self.allocator.free(self.texture_data);
+    }
+
+    pub fn get_char_glyph(self: *Self, char: u8, font: FontType) c.stbtt_bakedchar {
+        const font_data = self.fonts_data[@intFromEnum(font)];
+        const char_index = if (char < 32 or char > (32 + 96)) 32 else char;
+        return self.glyph_data.glyphs[font_data.start_glyph_index + @as(usize, char_index) - 32];
+    }
+
+    pub fn get_text_width(self: *Self, text: []const u8) Vector2 {
+        return self.get_text_width_font(text, DEFAULT_FONT);
+    }
 };
