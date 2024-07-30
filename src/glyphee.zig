@@ -63,4 +63,22 @@ pub const TypeSetter = struct {
     pub fn reset(self: *Self) void {
         self.glyphs.shrinkRetainingCapacity(0);
     }
+
+    fn load_font_data(self: *Self) !void {
+        // Loads all fonts into one texture.
+        self.texture_data = try self.allocator.alloc(u8, FONT_TEX_SIZE * FONT_TEX_SIZE);
+        var row: usize = 0;
+        var glyphs_used: usize = 0;
+        var i: usize = 0;
+        while (i < NUM_FONTS) : (i += 1) {
+            const bitmap_index = row * FONT_TEX_SIZE;
+            const glyph_index = glyphs_used;
+            const num_rows_used = c.stbtt_BakeFontBitmap(FONT_FILES[i], 0, FONT_SIZE, &self.texture_data[bitmap_index], FONT_TEX_SIZE, FONT_TEX_SIZE - @as(c_int, row), 32, 96, &self.glyph_data.glyphs[glyph_index]);
+            self.fonts_data[i].type_ = @enumFromInt(@as(u2, i));
+            self.fonts_data[i].start_row = row;
+            self.fonts_data[i].start_glyph_index = glyph_index;
+            row += @as(usize, num_rows_used);
+            glyphs_used += 96;
+        }
+    }
 };
