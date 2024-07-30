@@ -1,9 +1,11 @@
 // All information about the text, etc. is stored here.
+const std = @import("std");
 const c = @import("c.zig");
 const helpers = @import("helpers.zig");
 
 const NUM_FONTS = @typeInfo(FontType).Enum.fields.len;
 
+const Camera = helpers.Camera;
 const Vector4_gl = helpers.Vector4_gl;
 const DEFAULT_FONT: FontType = .debug;
 
@@ -33,4 +35,14 @@ pub const FontType = enum {
     display,
     /// Font for large amounts of text. Easier to read. Legible at small sizes
     info,
+};
+
+pub const TypeSetter = struct {
+    const Self = @This();
+    glyph_data: GlyphData = .{},
+    texture_data: []u8 = undefined,
+    allocator: *std.mem.Allocator,
+    glyphs: std.ArrayList(Glyph),
+    camera: *const Camera,
+    fonts_data: [NUM_FONTS]FontData = undefined,
 };
