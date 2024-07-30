@@ -116,4 +116,35 @@ pub const TypeSetter = struct {
     pub fn draw_char_color(self: *Self, pos: Vector2, char: u8, z: f32, camera: *const Camera, color: Vector4_gl) Vector2 {
         return self.draw_char_color_font(pos, char, z, camera, color, DEFAULT_FONT);
     }
+
+    pub fn draw_char_color_font(self: *Self, pos: Vector2, char: u8, z: f32, camera: *const Camera, color: Vector4_gl, font: FontType) Vector2 {
+        _ = camera;
+        const font_data = self.fonts_data[@intFromEnum(font)];
+        const glyph = self.get_char_glyph(char, font);
+        const inv_tex_width = 1.0 / @as(f32, FONT_TEX_SIZE);
+        const inv_tex_height = 1.0 / @as(f32, FONT_TEX_SIZE - font_data.start_row);
+        const round_x = @floor((pos.x + glyph.xoff) + 0.5);
+        const round_y = @floor((pos.y + glyph.yoff) + 0.5);
+        var quad: c.stbtt_aligned_quad = .{
+            .x0 = round_x,
+            .y0 = round_y,
+            .x1 = round_x + @as(f32, glyph.x1 - glyph.x0),
+            .y1 = round_y + @as(f32, glyph.y1 - glyph.y0),
+            .s0 = @as(f32, glyph.x0) * inv_tex_width,
+            .t0 = @as(f32, glyph.y0) * inv_tex_height,
+            .s1 = @as(f32, glyph.x1) * inv_tex_width,
+            .t1 = @as(f32, glyph.y1) * inv_tex_height,
+        };
+        quad.t0 = helpers.tex_remap(quad.t0, (FONT_TEX_SIZE - font_data.start_row), font_data.start_row);
+        quad.t1 = helpers.tex_remap(quad.t1, (FONT_TEX_SIZE - font_data.start_row), font_data.start_row);
+        const new_glyph = Glyph{
+            .char = char,
+            .color = color,
+            .font = font,
+            .quad = quad,
+            .z = z,
+        };
+        self.glyphs.append(new_glyph) catch unreachable;
+        return Vector2{ .x = glyph.xadvance };
+    }
 };
