@@ -1,6 +1,8 @@
 const c = @import("c.zig");
 const helpers = @import("helpers.zig");
 
+const NUM_FONTS = @typeInfo(FontType).Enum.fields.len;
+
 const Vector4_gl = helpers.Vector4_gl;
 const DEFAULT_FONT: FontType = .debug;
 
@@ -10,6 +12,10 @@ const Glyph = struct {
     color: Vector4_gl,
     quad: c.stbtt_aligned_quad,
     z: f32,
+};
+
+const GlyphData = struct {
+    glyphs: [96 * NUM_FONTS]c.stbtt_bakedchar = undefined,
 };
 
 pub const FontType = enum {
