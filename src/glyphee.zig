@@ -3,11 +3,14 @@ const std = @import("std");
 const c = @import("c.zig");
 const helpers = @import("helpers.zig");
 
-const NUM_FONTS = @typeInfo(FontType).Enum.fields.len;
-
 const Camera = helpers.Camera;
 const Vector4_gl = helpers.Vector4_gl;
+
+const NUM_FONTS = @typeInfo(FontType).Enum.fields.len;
+
 const DEFAULT_FONT: FontType = .debug;
+
+const GLYPH_CAPACITY = 2048;
 
 const Glyph = struct {
     char: u8,
@@ -45,4 +48,19 @@ pub const TypeSetter = struct {
     glyphs: std.ArrayList(Glyph),
     camera: *const Camera,
     fonts_data: [NUM_FONTS]FontData = undefined,
+
+    pub fn init(self: *Self, camera: *const Camera, allocator: *std.mem.Allocator) !void {
+        self.allocator = allocator;
+        self.camera = camera;
+        self.glyphs = std.ArrayList(Glyph).initCapacity(self.allocator, GLYPH_CAPACITY) catch unreachable;
+        try self.load_font_data();
+    }
+
+    pub fn deinit(self: *Self) void {
+        self.glyphs.deinit();
+    }
+
+    pub fn reset(self: *Self) void {
+        self.glyphs.shrinkRetainingCapacity(0);
+    }
 };
