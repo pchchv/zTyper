@@ -1,3 +1,4 @@
+// All information about the text, etc. is stored here.
 const c = @import("c.zig");
 const helpers = @import("helpers.zig");
 
@@ -16,6 +17,13 @@ const Glyph = struct {
 
 const GlyphData = struct {
     glyphs: [96 * NUM_FONTS]c.stbtt_bakedchar = undefined,
+};
+
+const FontData = struct {
+    type_: FontType = DEFAULT_FONT,
+    start_glyph_index: usize = 0,
+    start_row: usize = 0,
+    num_rows: usize = 0,
 };
 
 pub const FontType = enum {
