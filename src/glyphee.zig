@@ -234,4 +234,29 @@ pub const TypeSetter = struct {
     pub fn get_text_width(self: *Self, text: []const u8) Vector2 {
         return self.get_text_width_font(text, DEFAULT_FONT);
     }
+
+    pub fn get_text_width_font(self: *Self, text: []const u8, font: FontType) Vector2 {
+        var width: f32 = 0.0;
+        for (text) |char| {
+            const glyph = self.get_char_glyph(char, font);
+            width += glyph.xadvance;
+        }
+        return Vector2{ .x = width };
+    }
+
+    pub fn get_text_offset(self: *Self, text: []const u8, width: f32, camera: *const Camera) Vector2 {
+        var offsets = Vector2{};
+        var new_line = false;
+        for (text) |char| {
+            const char_offset = self.get_char_offset(char);
+            offsets = Vector2.add(offsets, char_offset);
+            if (offsets.x > width) new_line = true;
+            if (char == '\n' or (new_line and char == ' ')) {
+                offsets.x = 0.0;
+                offsets.y += FONT_SIZE * 1.2;
+                new_line = false;
+            }
+        }
+        return camera.screen_vec_to_world(offsets);
+    }
 };
