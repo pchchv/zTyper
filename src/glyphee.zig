@@ -259,4 +259,24 @@ pub const TypeSetter = struct {
         }
         return camera.screen_vec_to_world(offsets);
     }
+
+    pub fn get_text_bounding_box(self: *Self, text: []const u8, width: f32, camera: *const Camera) Vector2 {
+        var num_lines: f32 = 1;
+        var offsets = Vector2{};
+        var new_line = false;
+        for (text) |char| {
+            const char_offset = self.get_char_offset(char);
+            offsets = Vector2.add(offsets, char_offset);
+            if (offsets.x > width) new_line = true;
+            if (char == '\n' or (new_line and char == ' ')) {
+                offsets.x = 0.0;
+                new_line = false;
+                num_lines += 1;
+            }
+        }
+
+        if (num_lines > 1) offsets.x = width;
+        offsets.y = FONT_SIZE * 1.2 * num_lines;
+        return camera.screen_vec_to_world(offsets);
+    }
 };
