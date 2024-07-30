@@ -162,4 +162,20 @@ pub const App = struct {
     pub fn reset_inputs(self: *Self) void {
         self.inputs.reset();
     }
+
+    pub fn check_line(self: *Self) void {
+        self.lines.shrinkRetainingCapacity(0);
+        var start: usize = 0;
+        for (self.typed.text.items, 0..) |char, i| {
+            var new_line = false;
+            if (i - start > TYPEROO_LINE_WIDTH) new_line = true;
+            if (char == '\n' or (new_line and char == ' ')) {
+                const line = Line{ .start = start, .end = i };
+                self.lines.append(line) catch unreachable;
+                start = i + 1;
+            }
+        }
+        const line = Line{ .start = start, .end = self.typed.text.items.len };
+        self.lines.append(line) catch unreachable;
+    }
 };
