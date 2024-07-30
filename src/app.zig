@@ -6,6 +6,7 @@ const EditableText = helpers.EditableText;
 
 const TYPEROO_LINE_WIDTH = 66;
 const TYPEROO_NUM_BACKSPACE = 8;
+const NOTEBOOK_PATH = "C:\\Users\\user\\notebook.txt";
 
 const Line = struct {
     start: usize = 0,
@@ -64,5 +65,28 @@ pub const App = struct {
         const year_day = epoch_day.calculateYearDay();
         const month_day = year_day.calculateMonthDay();
         std.debug.print("Year: {d}, Month: {d}, Day: {d}\n", .{ year_day.year, @intFromEnum(month_day.month), month_day.day_index + 1 });
+    }
+
+    fn save_note_to_file(self: *Self) void {
+        var notebook_file = std.fs.cwd().openFile(NOTEBOOK_PATH, .{ .read = true, .write = true }) catch {
+            std.debug.print("Could not open file to save.\n {s} \n", .{self.typed.text.items});
+            return;
+        };
+        defer notebook_file.close();
+
+        notebook_file.seekFromEnd(0) catch unreachable;
+
+        var buffer: [256]u8 = undefined;
+        // By default this gives time in UTC. So a simple translation to IST
+        const timestamp_ist: u64 = @as(u64, std.time.timestamp()) + (60 * 60 * 5) + (60 * 30);
+        const epoch_seconds = std.time.epoch.EpochSeconds{ .secs = @as(u64, timestamp_ist) };
+        const epoch_day = epoch_seconds.getEpochDay();
+        const day_seconds = epoch_seconds.getDaySeconds();
+        const year_day = epoch_day.calculateYearDay();
+        const month_day = year_day.calculateMonthDay();
+        const line = std.fmt.bufPrint(buffer[0..], "--- {d} {s} {d} - {d}:{d} ---\n", .{ month_day.day_index + 1, self.month_str(month_day.month), year_day.year, day_seconds.getHoursIntoDay(), day_seconds.getMinutesIntoHour() }) catch unreachable;
+        notebook_file.writeAll(line) catch unreachable;
+        notebook_file.writeAll(self.typed.text.items) catch unreachable;
+        notebook_file.writeAll("\n\n") catch unreachable;
     }
 };
