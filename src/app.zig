@@ -89,4 +89,32 @@ pub const App = struct {
         notebook_file.writeAll(self.typed.text.items) catch unreachable;
         notebook_file.writeAll("\n\n") catch unreachable;
     }
+
+    fn month_str(self: *Self, month: std.time.epoch.Month) []const u8 {
+        _ = self;
+        return switch (month) {
+            .jan => "Jan",
+            .feb => "Feb",
+            .mar => "Mar",
+            .apr => "Apr",
+            .may => "May",
+            .jun => "Jun",
+            .jul => "Jul",
+            .aug => "Aug",
+            .sep => "Sep",
+            .oct => "Oct",
+            .nov => "Nov",
+            .dec => "Dec",
+        };
+    }
+
+    fn update_backspace(self: *Self) void {
+        for (self.inputs.typed[0..self.inputs.num_typed]) |char| {
+            if (char == 8) {
+                self.backspace_used += 1;
+            } else if (self.backspace_used > 0) {
+                self.backspace_used -= 1;
+            }
+        }
+    }
 };
