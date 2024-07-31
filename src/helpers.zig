@@ -74,6 +74,18 @@ pub const Vector2 = struct {
             .y = v1.y - v2.y,
         };
     }
+
+    pub fn distance(v1: Vector2, v2: Vector2) f32 {
+        return @sqrt(((v2.x - v1.x) * (v2.x - v1.x)) + ((v2.y - v1.y) * (v2.y - v1.y)));
+    }
+
+    pub fn distance_sqr(v1: Vector2, v2: Vector2) f32 {
+        return ((v2.x - v1.x) * (v2.x - v1.x)) + ((v2.y - v1.y) * (v2.y - v1.y));
+    }
+
+    pub fn distance_to_sqr(v1: *const Vector2, v2: Vector2) f32 {
+        return ((v2.x - v1.x) * (v2.x - v1.x)) + ((v2.y - v1.y) * (v2.y - v1.y));
+    }
 };
 
 pub const EditableText = struct {
