@@ -221,6 +221,14 @@ pub const Vector2 = struct {
     pub fn cross_z(v1: Vector2, v2: Vector2) f32 {
         return (v1.x * v2.y) - (v1.y * v2.x);
     }
+
+    pub fn from_int(x: i32, y: i32) Vector2 {
+        return Vector2{ .x = @floatFromInt(x), .y = @floatFromInt(y) };
+    }
+
+    pub fn from_usize(x: usize, y: usize) Vector2 {
+        return Vector2{ .x = @floatFromInt(x), .y = @floatFromInt(y) };
+    }
 };
 
 pub const EditableText = struct {
