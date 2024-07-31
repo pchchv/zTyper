@@ -56,6 +56,24 @@ pub const Vector2 = struct {
             .y = v1.y + v2.y,
         };
     }
+
+    pub fn added(v1: *const Vector2, v2: Vector2) Vector2 {
+        return Vector2.add(v1.*, v2);
+    }
+
+    pub fn add3(v1: Vector2, v2: Vector2, v3: Vector2) Vector2 {
+        return Vector2{
+            .x = v1.x + v2.x + v3.x,
+            .y = v1.y + v2.y + v3.y,
+        };
+    }
+
+    pub fn subtract(v1: Vector2, v2: Vector2) Vector2 {
+        return Vector2{
+            .x = v1.x - v2.x,
+            .y = v1.y - v2.y,
+        };
+    }
 };
 
 pub const EditableText = struct {
