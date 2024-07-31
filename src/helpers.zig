@@ -207,6 +207,20 @@ pub const Vector2 = struct {
     pub fn is_nan(v1: *const Vector2) bool {
         return is_nanf(v1.x) or is_nanf(v1.y);
     }
+
+    pub fn dot(v1: Vector2, v2: Vector2) f32 {
+        std.debug.assert(!is_nanf(v1.x));
+        std.debug.assert(!is_nanf(v1.y));
+        std.debug.assert(!is_nanf(v2.x));
+        std.debug.assert(!is_nanf(v2.y));
+        return v1.x * v2.x + v1.y * v2.y;
+    }
+
+    /// Returns the z element of the 3d cross product of two vectors.
+    /// Used to determine the winding of points.
+    pub fn cross_z(v1: Vector2, v2: Vector2) f32 {
+        return (v1.x * v2.y) - (v1.y * v2.x);
+    }
 };
 
 pub const EditableText = struct {
