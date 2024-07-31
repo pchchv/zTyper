@@ -333,4 +333,17 @@ pub const Vector4_gl = extern struct {
     y: c.GLfloat = 0.0,
     z: c.GLfloat = 0.0,
     w: c.GLfloat = 0.0,
+
+    pub fn lerp(v1: Vector4_gl, v2: Vector4_gl, t: f32) Vector4_gl {
+        return Vector4_gl{
+            .x = lerpf(v1.x, v2.x, t),
+            .y = lerpf(v1.y, v2.y, t),
+            .z = lerpf(v1.z, v2.z, t),
+            .w = lerpf(v1.w, v2.w, t),
+        };
+    }
+
+    pub fn equals(v1: Vector4_gl, v2: Vector4_gl) bool {
+        return v1.x == v2.x and v1.y == v2.y and v1.z == v2.z and v1.w == v2.w;
+    }
 };
