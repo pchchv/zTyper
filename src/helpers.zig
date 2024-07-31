@@ -11,6 +11,14 @@ pub fn unlerpf(start: f32, end: f32, t: f32) f32 {
     return (t - start) / (end - start);
 }
 
+pub fn is_nanf(f: f32) bool {
+    return f != f;
+}
+
+pub fn easeinoutf(start: f32, end: f32, t: f32) f32 {
+    return start + ((end - start) * (t * t * (3.0 - (2.0 * t))));
+}
+
 pub const Vector2 = struct {
     const Self = @This();
     x: f32 = 0.0,
