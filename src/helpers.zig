@@ -165,6 +165,28 @@ pub const Vector2 = struct {
         const rotated = Vector2.rotate_deg(adjusted, a);
         return Vector2.add(anchor, rotated);
     }
+
+    pub fn normalize(v1: Vector2) Vector2 {
+        const l = Vector2.length(v1);
+        return Vector2{
+            .x = v1.x / l,
+            .y = v1.y / l,
+        };
+    }
+
+    /// Gives the angle in radians clockwise from the first vector to the second vector.
+    /// Assumes that the vectors are normalized.
+    pub fn angle_cw(v1: Vector2, v2: Vector2) f32 {
+        std.debug.assert(!v1.is_nan());
+        std.debug.assert(!v2.is_nan());
+        const dot_product = std.math.clamp(Vector2.dot(v1, v2), -1, 1);
+        var a = std.math.acos(dot_product);
+        std.debug.assert(!is_nanf(a));
+        const winding = Vector2.cross_z(v1, v2);
+        std.debug.assert(!is_nanf(winding));
+        if (winding < 0) a = TWO_PI - a;
+        return a;
+    }
 };
 
 pub const EditableText = struct {
