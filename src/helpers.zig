@@ -199,6 +199,14 @@ pub const Vector2 = struct {
     pub fn is_equal(v1: *const Vector2, v2: Vector2) bool {
         return v1.x == v2.x and v1.y == v2.y;
     }
+
+    pub fn is_zero(v1: *const Vector2) bool {
+        return v1.x == 0 and v1.y == 0;
+    }
+
+    pub fn is_nan(v1: *const Vector2) bool {
+        return is_nanf(v1.x) or is_nanf(v1.y);
+    }
 };
 
 pub const EditableText = struct {
