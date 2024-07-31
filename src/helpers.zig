@@ -42,6 +42,20 @@ pub const Vector2 = struct {
         }
         return 0;
     }
+
+    pub fn ease(v1: Vector2, v2: Vector2, t: f32) Vector2 {
+        return Vector2{
+            .x = easeinoutf(v1.x, v2.x, t),
+            .y = easeinoutf(v1.y, v2.y, t),
+        };
+    }
+
+    pub fn add(v1: Vector2, v2: Vector2) Vector2 {
+        return Vector2{
+            .x = v1.x + v2.x,
+            .y = v1.y + v2.y,
+        };
+    }
 };
 
 pub const EditableText = struct {
