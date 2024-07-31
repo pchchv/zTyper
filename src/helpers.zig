@@ -120,6 +120,20 @@ pub const Vector2 = struct {
             .y = v1.y * v2.y,
         };
     }
+
+    pub fn negated(v1: *const Vector2) Vector2 {
+        return Vector2{
+            .x = -v1.x,
+            .y = -v1.y,
+        };
+    }
+
+    pub fn subtract_half(v1: Vector2, v2: Vector2) Vector2 {
+        return Vector2{
+            .x = v1.x - (0.5 * v2.x),
+            .y = v1.y - (0.5 * v2.y),
+        };
+    }
 };
 
 pub const EditableText = struct {
