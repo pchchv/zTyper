@@ -346,4 +346,11 @@ pub const Vector4_gl = extern struct {
     pub fn equals(v1: Vector4_gl, v2: Vector4_gl) bool {
         return v1.x == v2.x and v1.y == v2.y and v1.z == v2.z and v1.w == v2.w;
     }
-};
+
+    pub fn with_alpha(v1: *const Vector4_gl, a: f32) Vector4_gl {
+        return Vector4_gl{ .x = v1.x, .y = v1.y, .z = v1.z, .w = a };
+    }
+
+    pub fn is_equal_to(v1: *const Vector4_gl, v2: Vector4_gl) bool {
+        return Vector4_gl.equals(v1.*, v2);
+    }
