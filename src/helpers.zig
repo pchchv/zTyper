@@ -86,6 +86,14 @@ pub const Vector2 = struct {
     pub fn distance_to_sqr(v1: *const Vector2, v2: Vector2) f32 {
         return ((v2.x - v1.x) * (v2.x - v1.x)) + ((v2.y - v1.y) * (v2.y - v1.y));
     }
+
+    pub fn length(v1: Vector2) f32 {
+        return @sqrt((v1.x * v1.x) + (v1.y * v1.y));
+    }
+
+    pub fn length_sqr(v1: Vector2) f32 {
+        return (v1.x * v1.x) + (v1.y * v1.y);
+    }
 };
 
 pub const EditableText = struct {
