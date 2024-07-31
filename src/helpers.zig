@@ -1,4 +1,5 @@
 const std = @import("std");
+const c = @import("c.zig");
 
 pub const PI = std.math.pi;
 pub const HALF_PI = PI / 2.0;
@@ -313,4 +314,15 @@ pub const EditableText = struct {
             }
         }
     }
+};
+
+pub const Vector2_gl = extern struct {
+    x: c.GLfloat = 0.0,
+    y: c.GLfloat = 0.0,
+};
+
+pub const Vector3_gl = extern struct {
+    x: c.GLfloat = 0.0,
+    y: c.GLfloat = 0.0,
+    z: c.GLfloat = 0.0,
 };
