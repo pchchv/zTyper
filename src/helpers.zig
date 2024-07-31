@@ -229,6 +229,21 @@ pub const Vector2 = struct {
     pub fn from_usize(x: usize, y: usize) Vector2 {
         return Vector2{ .x = @floatFromInt(x), .y = @floatFromInt(y) };
     }
+
+    /// Returns what value of point p if we have a line v1-v2,
+    /// where v1 is 0 and v2 is 1.
+    /// It is assumed that p lies along the line.
+    pub fn get_fraction(v1: Vector2, v2: Vector2, p: Vector2) f32 {
+        const len = Vector2.distance(v1, v2);
+        const p_len = Vector2.distance(v1, p);
+        return p_len / len;
+    }
+
+    pub fn get_perp(v1: Vector2, v2: Vector2) Vector2 {
+        const line = Vector2.subtract(v2, v1);
+        const perp = Vector2.normalize(Vector2{ .x = line.y, .y = -line.x });
+        return perp;
+    }
 };
 
 pub const EditableText = struct {
