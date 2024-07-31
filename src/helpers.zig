@@ -191,6 +191,14 @@ pub const Vector2 = struct {
         if (winding < 0) a = TWO_PI - a;
         return a;
     }
+
+    pub fn equals(v1: Vector2, v2: Vector2) bool {
+        return v1.x == v2.x and v1.y == v2.y;
+    }
+
+    pub fn is_equal(v1: *const Vector2, v2: Vector2) bool {
+        return v1.x == v2.x and v1.y == v2.y;
+    }
 };
 
 pub const EditableText = struct {
