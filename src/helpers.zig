@@ -134,6 +134,37 @@ pub const Vector2 = struct {
             .y = v1.y - (0.5 * v2.y),
         };
     }
+
+    pub fn rotate(v: Vector2, a: f32) Vector2 {
+        const cosa = @cos(a);
+        const sina = @sin(a);
+        return Vector2{
+            .x = (cosa * v.x) - (sina * v.y),
+            .y = (sina * v.x) + (cosa * v.y),
+        };
+    }
+
+    pub fn rotate_deg(v: Vector2, d: f32) Vector2 {
+        const a = d * std.math.pi / 180.0;
+        const cosa = @cos(a);
+        const sina = @sin(a);
+        return Vector2{
+            .x = (cosa * v.x) - (sina * v.y),
+            .y = (sina * v.x) + (cosa * v.y),
+        };
+    }
+
+    pub fn rotate_about_point(v1: Vector2, anchor: Vector2, a: f32) Vector2 {
+        const adjusted = Vector2.subtract(v1, anchor);
+        const rotated = Vector2.rotate(adjusted, a);
+        return Vector2.add(anchor, rotated);
+    }
+
+    pub fn rotate_about_point_deg(v1: Vector2, anchor: Vector2, a: f32) Vector2 {
+        const adjusted = Vector2.subtract(v1, anchor);
+        const rotated = Vector2.rotate_deg(adjusted, a);
+        return Vector2.add(anchor, rotated);
+    }
 };
 
 pub const EditableText = struct {
