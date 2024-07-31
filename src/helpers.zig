@@ -354,3 +354,15 @@ pub const Vector4_gl = extern struct {
     pub fn is_equal_to(v1: *const Vector4_gl, v2: Vector4_gl) bool {
         return Vector4_gl.equals(v1.*, v2);
     }
+
+    /// Returns black and white version of the color
+    pub fn bw(v1: *const Vector4_gl) Vector4_gl {
+        const col = (v1.x + v1.y + v1.z) / 3.0;
+        return Vector4_gl{
+            .x = col,
+            .y = col,
+            .z = col,
+            .w = v1.w,
+        };
+    }
+};
