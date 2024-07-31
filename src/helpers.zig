@@ -244,6 +244,18 @@ pub const Vector2 = struct {
         const perp = Vector2.normalize(Vector2{ .x = line.y, .y = -line.x });
         return perp;
     }
+
+    /// Perhaps it can be done without normalization.
+    pub fn reflect(v1: Vector2, surface: Vector2) Vector2 {
+        // Since we are reflected from the surface,
+        // we first need to find the component v1 perpendicular to the surface.
+        // Then we need to reverse this component.
+        // Or we can simply subtract twice the negative value of this component from v1.
+        const n_surf = Vector2.normalize(surface);
+        const v1_par = Vector2.scale(n_surf, Vector2.dot(v1, n_surf));
+        const v1_perp = Vector2.subtract(v1, v1_par);
+        return Vector2.subtract(v1, Vector2.scale(v1_perp, 2.0));
+    }
 };
 
 pub const EditableText = struct {
