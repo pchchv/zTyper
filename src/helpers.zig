@@ -326,3 +326,11 @@ pub const Vector3_gl = extern struct {
     y: c.GLfloat = 0.0,
     z: c.GLfloat = 0.0,
 };
+
+pub const Vector4_gl = extern struct {
+    const Self = @This();
+    x: c.GLfloat = 0.0,
+    y: c.GLfloat = 0.0,
+    z: c.GLfloat = 0.0,
+    w: c.GLfloat = 0.0,
+};
