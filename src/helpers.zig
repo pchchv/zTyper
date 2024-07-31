@@ -94,6 +94,32 @@ pub const Vector2 = struct {
     pub fn length_sqr(v1: Vector2) f32 {
         return (v1.x * v1.x) + (v1.y * v1.y);
     }
+
+    pub fn scale(v1: Vector2, t: f32) Vector2 {
+        return Vector2{
+            .x = v1.x * t,
+            .y = v1.y * t,
+        };
+    }
+
+    pub fn scaled(v1: *const Vector2, t: f32) Vector2 {
+        return Vector2{
+            .x = v1.x * t,
+            .y = v1.y * t,
+        };
+    }
+
+    pub fn scale_anchor(v1: *const Vector2, anchor: Vector2, f: f32) Vector2 {
+        const translated = Vector2.subtract(v1.*, anchor);
+        return Vector2.add(anchor, Vector2.scale(translated, f));
+    }
+
+    pub fn scale_vec(v1: Vector2, v2: Vector2) Vector2 {
+        return Vector2{
+            .x = v1.x * v2.x,
+            .y = v1.y * v2.y,
+        };
+    }
 };
 
 pub const EditableText = struct {
