@@ -1,5 +1,9 @@
 const std = @import("std");
 
+pub const PI = std.math.pi;
+pub const HALF_PI = PI / 2.0;
+pub const TWO_PI = PI * 2.0;
+
 pub fn lerpf(start: f32, end: f32, t: f32) f32 {
     return (start * (1.0 - t)) + (end * t);
 }
