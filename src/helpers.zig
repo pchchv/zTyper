@@ -426,3 +426,10 @@ pub const Camera = struct {
         return self.zoom_factor * self.window_scale;
     }
 };
+
+pub const SingleInput = struct {
+    down_from: u32 = 0,
+    is_down: bool = false,
+    is_clicked: bool = false, // During one frame when the key is released
+    is_released: bool = false, // During one frame when the key is released
+};
