@@ -417,4 +417,12 @@ pub const Camera = struct {
     pub fn world_units_to_screen(self: *const Self, unit: f32) f32 {
         return unit * self.zoom_factor;
     }
+
+    pub fn render_size(self: *const Self) Vector2 {
+        return Vector2.scale(self.window_size, 1.0 / self.combined_zoom());
+    }
+
+    pub fn combined_zoom(self: *const Self) f32 {
+        return self.zoom_factor * self.window_scale;
+    }
 };
