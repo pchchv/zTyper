@@ -1,5 +1,6 @@
 const std = @import("std");
 const c = @import("c.zig");
+const constants = @import("constants.zig");
 
 pub const PI = std.math.pi;
 pub const HALF_PI = PI / 2.0;
@@ -365,4 +366,15 @@ pub const Vector4_gl = extern struct {
             .w = v1.w,
         };
     }
+};
+
+pub const Camera = struct {
+    const Self = @This();
+    size_updated: bool = true,
+    zoom_factor: f32 = 1.0,
+    origin: Vector2 = .{},
+    window_scale: f32 = constants.DEFAULT_USER_WINDOW_SCALE,
+    window_size: Vector2 = .{ .x = constants.DEFAULT_WINDOW_WIDTH * constants.DEFAULT_USER_WINDOW_SCALE, .y = constants.DEFAULT_WINDOW_HEIGHT * constants.DEFAULT_USER_WINDOW_SCALE },
+    // Used to store the window scale if the user goes into full screen mode and later returns to windowed mode.
+    user_window_scale: f32 = constants.DEFAULT_USER_WINDOW_SCALE,
 };
