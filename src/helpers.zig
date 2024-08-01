@@ -450,6 +450,65 @@ pub fn easeinoutf(start: f32, end: f32, t: f32) f32 {
     return start + ((end - start) * (t * t * (3.0 - (2.0 * t))));
 }
 
+pub fn get_char(event: c.SDL_Event) ?u8 {
+    const name = c.SDL_GetKeyName(event.key.keysym.sym);
+    var len: usize = 0;
+    while (name[len] != 0) : (len += 1) {}
+    if (len == 0) return null;
+    var key = name[0];
+    if (std.mem.eql(u8, name[0..len], "Space")) {
+        key = ' ';
+        len = 1;
+    }
+
+    if (std.mem.eql(u8, name[0..len], "Return")) {
+        key = '\n';
+        len = 1;
+    }
+
+    if (std.mem.eql(u8, name[0..len], "Keypad Enter")) {
+        key = '\n';
+        len = 1;
+    }
+
+    if (len != 1) return null;
+    const mods = c.SDL_GetModState();
+    const caps = (mods & c.KMOD_CAPS) > 0;
+    const shift = (mods & c.KMOD_SHIFT) > 0;
+    if (key_is_letter(key)) {
+        // not xor.
+        // It needs to handle case where exactly one of caps and shift are active.
+        if (caps == shift) key += 32;
+    } else if (shift) {
+        switch (key) {
+            '1' => key = '!',
+            '2' => key = '@',
+            '3' => key = '#',
+            '4' => key = '$',
+            '5' => key = '%',
+            '6' => key = '^',
+            '7' => key = '&',
+            '8' => key = '*',
+            '9' => key = '(',
+            '0' => key = ')',
+            '`' => key = '~',
+            '\\' => key = '|',
+            '[' => key = '{',
+            ']' => key = '}',
+            ';' => key = ':',
+            '\'' => key = '"',
+            ',' => key = '<',
+            '.' => key = '>',
+            '/' => key = '?',
+            '-' => key = '_',
+            '=' => key = '+',
+            else => {},
+        }
+        // handle some of the punctuation things
+    }
+    return key;
+}
+
 /// Checks the caps ASCII range.
 fn key_is_letter(k: u8) bool {
     // keyname is always caps.
