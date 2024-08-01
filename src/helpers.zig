@@ -449,3 +449,9 @@ pub const SingleInput = struct {
         self.is_released = true;
     }
 };
+
+/// Checks the caps ASCII range.
+fn key_is_letter(k: u8) bool {
+    // keyname is always caps.
+    return k >= 65 and k <= 90;
+}
