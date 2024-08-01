@@ -400,4 +400,11 @@ pub const Camera = struct {
         const scaled = Vector2.scale(pos, 1.0 / (self.zoom_factor * self.combined_zoom()));
         return Vector2.add(scaled, self.origin);
     }
-};
+
+    pub fn screen_vec_to_world(self: *const Self, size: Vector2) Vector2 {
+        return Vector2.scale(size, 1.0 / self.zoom_factor);
+    }
+
+    pub fn screen_units_to_world(self: *const Self, unit: f32) f32 {
+        return unit / self.zoom_factor;
+    }
