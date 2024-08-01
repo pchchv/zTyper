@@ -408,3 +408,13 @@ pub const Camera = struct {
     pub fn screen_units_to_world(self: *const Self, unit: f32) f32 {
         return unit / self.zoom_factor;
     }
+
+    pub fn ui_pos_to_world(self: *const Self, pos: Vector2) Vector2 {
+        const scaled = Vector2.scale(pos, 1.0 / (self.zoom_factor * self.zoom_factor));
+        return Vector2.add(scaled, self.origin);
+    }
+
+    pub fn world_units_to_screen(self: *const Self, unit: f32) f32 {
+        return unit * self.zoom_factor;
+    }
+};
