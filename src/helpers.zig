@@ -433,6 +433,11 @@ pub const SingleInput = struct {
     is_clicked: bool = false, // During one frame when the key is released
     is_released: bool = false, // During one frame when the key is released
 
+    pub fn reset(self: *SingleInput) void {
+        self.is_clicked = false;
+        self.is_released = false;
+    }
+
     pub fn set_down(self: *SingleInput, ticks: u32) void {
         self.is_down = true;
         self.is_clicked = true;
