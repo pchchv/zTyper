@@ -377,4 +377,13 @@ pub const Camera = struct {
     window_size: Vector2 = .{ .x = constants.DEFAULT_WINDOW_WIDTH * constants.DEFAULT_USER_WINDOW_SCALE, .y = constants.DEFAULT_WINDOW_HEIGHT * constants.DEFAULT_USER_WINDOW_SCALE },
     // Used to store the window scale if the user goes into full screen mode and later returns to windowed mode.
     user_window_scale: f32 = constants.DEFAULT_USER_WINDOW_SCALE,
+
+    pub fn world_pos_to_screen(self: *const Self, pos: Vector2) Vector2 {
+        const tmp1 = Vector2.subtract(pos, self.origin);
+        return Vector2.scale(tmp1, self.zoom_factor);
+    }
+
+    pub fn world_size_to_screen(self: *const Self, size: Vector2) Vector2 {
+        return Vector2.scale(size, self.zoom_factor);
+    }
 };
