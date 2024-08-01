@@ -432,4 +432,15 @@ pub const SingleInput = struct {
     is_down: bool = false,
     is_clicked: bool = false, // During one frame when the key is released
     is_released: bool = false, // During one frame when the key is released
+
+    pub fn set_down(self: *SingleInput, ticks: u32) void {
+        self.is_down = true;
+        self.is_clicked = true;
+        self.down_from = ticks;
+    }
+
+    pub fn set_release(self: *SingleInput) void {
+        self.is_down = false;
+        self.is_released = true;
+    }
 };
