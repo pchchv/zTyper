@@ -386,4 +386,18 @@ pub const Camera = struct {
     pub fn world_size_to_screen(self: *const Self, size: Vector2) Vector2 {
         return Vector2.scale(size, self.zoom_factor);
     }
+
+    pub fn screen_size_to_world(self: *const Self, size: Vector2) Vector2 {
+        return Vector2.scale(size, 1.0 / (self.zoom_factor * self.zoom_factor));
+    }
+
+    pub fn screen_pos_to_world(self: *const Self, pos: Vector2) Vector2 {
+        // The pos goes from (0,0) to (x,y) where x and y are the actual screen sizes.
+        // (pixel size on the screen as per OS)
+        // we need to map this to a rectangle where
+        // 0,0 is mapped to the origin and
+        // x,y is mapped to the origin + w/zoom*scale
+        const scaled = Vector2.scale(pos, 1.0 / (self.zoom_factor * self.combined_zoom()));
+        return Vector2.add(scaled, self.origin);
+    }
 };
