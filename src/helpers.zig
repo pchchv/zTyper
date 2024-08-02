@@ -442,6 +442,14 @@ pub const MouseState = struct {
     l_button: SingleInput = .{},
     r_button: SingleInput = .{},
     m_button: SingleInput = .{},
+
+    pub fn reset_mouse(self: *Self) void {
+        self.previous_pos = self.current_pos;
+        self.l_button.reset();
+        self.r_button.reset();
+        self.m_button.reset();
+        self.wheel_y = 0;
+    }
 };
 
 pub fn lerpf(start: f32, end: f32, t: f32) f32 {
