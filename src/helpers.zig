@@ -431,6 +431,19 @@ pub const SingleInput = struct {
     }
 };
 
+pub const MouseState = struct {
+    const Self = @This();
+    wheel_y: i32 = 0,
+    l_down_pos: Vector2 = .{},
+    r_down_pos: Vector2 = .{},
+    m_down_pos: Vector2 = .{},
+    current_pos: Vector2 = .{},
+    previous_pos: Vector2 = .{},
+    l_button: SingleInput = .{},
+    r_button: SingleInput = .{},
+    m_button: SingleInput = .{},
+};
+
 pub fn lerpf(start: f32, end: f32, t: f32) f32 {
     return (start * (1.0 - t)) + (end * t);
 }
