@@ -509,6 +509,15 @@ pub fn get_char(event: c.SDL_Event) ?u8 {
     return key;
 }
 
+/// Loading multiple fonts into one texture,
+/// but API processes it not quite correctly and treats it as texture smaller / narrower.
+/// Therefore it is necessary to change t0 and t1 values.
+pub fn tex_remap(y_in: f32, y_height: usize, y_padding: usize) f32 {
+    const pixel = @as(usize, y_in * @as(f32, y_height));
+    const total_height = y_height + y_padding;
+    return @as(f32, pixel + y_padding) / @as(f32, total_height);
+}
+
 /// Checks the caps ASCII range.
 fn key_is_letter(k: u8) bool {
     // keyname is always caps.
