@@ -454,6 +454,16 @@ pub const MouseState = struct {
     pub fn movement(self: *Self) Vector2 {
         return Vector2.subtract(self.previous_pos, self.current_pos);
     }
+
+    pub fn l_single_pos_click(self: *Self) bool {
+        if (self.l_button.is_released == false) return false;
+        if (self.l_down_pos.distance_to_sqr(self.current_pos) == 0) return true;
+        return false;
+    }
+
+    pub fn l_moved(self: *Self) bool {
+        return (self.l_down_pos.distance_to_sqr(self.current_pos) > 0);
+    }
 };
 
 pub fn lerpf(start: f32, end: f32, t: f32) f32 {
