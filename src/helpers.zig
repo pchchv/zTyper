@@ -464,6 +464,43 @@ pub const MouseState = struct {
     pub fn l_moved(self: *Self) bool {
         return (self.l_down_pos.distance_to_sqr(self.current_pos) > 0);
     }
+
+    pub fn handle_input(self: *Self, event: c.SDL_Event, ticks: u32, camera: *Camera) void {
+        switch (event.type) {
+            c.SDL_MOUSEBUTTONDOWN, c.SDL_MOUSEBUTTONUP => {
+                const button = switch (event.button.button) {
+                    c.SDL_BUTTON_LEFT => &self.l_button,
+                    c.SDL_BUTTON_RIGHT => &self.r_button,
+                    c.SDL_BUTTON_MIDDLE => &self.m_button,
+                    else => &self.l_button,
+                };
+                const pos = switch (event.button.button) {
+                    c.SDL_BUTTON_LEFT => &self.l_down_pos,
+                    c.SDL_BUTTON_RIGHT => &self.r_down_pos,
+                    c.SDL_BUTTON_MIDDLE => &self.m_down_pos,
+                    else => &self.l_down_pos,
+                };
+                if (event.type == c.SDL_MOUSEBUTTONDOWN) {
+                    pos.* = self.current_pos;
+                    self.l_down_pos = self.current_pos;
+                    button.is_down = true;
+                    button.is_clicked = true;
+                    button.down_from = ticks;
+                }
+
+                if (event.type == c.SDL_MOUSEBUTTONUP) {
+                    button.is_down = false;
+                    button.is_released = true;
+                }
+            },
+            c.SDL_MOUSEWHEEL => {
+                self.wheel_y = event.wheel.y;
+            },
+            c.SDL_MOUSEMOTION => {
+                self.current_pos = camera.screen_pos_to_world(Vector2.from_int(event.motion.x, event.motion.y));
+            },
+        }
+    }
 };
 
 pub fn lerpf(start: f32, end: f32, t: f32) f32 {
