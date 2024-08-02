@@ -450,6 +450,10 @@ pub const MouseState = struct {
         self.m_button.reset();
         self.wheel_y = 0;
     }
+
+    pub fn movement(self: *Self) Vector2 {
+        return Vector2.subtract(self.previous_pos, self.current_pos);
+    }
 };
 
 pub fn lerpf(start: f32, end: f32, t: f32) f32 {
