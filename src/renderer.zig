@@ -1,5 +1,6 @@
 const std = @import("std");
 const c = @import("c.zig");
+const App = @import("app.zig").App;
 const helpers = @import("helpers.zig");
 const glyph_lib = @import("glyphee.zig");
 const constants = @import("constants.zig");
@@ -255,5 +256,15 @@ pub const Renderer = struct {
         self.text_shader.clear_buffers();
         self.typesetter.reset();
         self.z_val = 0.999;
+    }
+
+    pub fn render_app(self: *Self, ticks: u32, app: *App) void {
+        _ = app;
+        self.ticks = ticks;
+        c.glClearColor(37.0 / 255.0, 37.0 / 255.0, 37.0 / 255.0, 1.0);
+        c.glClear(c.GL_COLOR_BUFFER_BIT | c.GL_DEPTH_BUFFER_BIT);
+        self.draw_buffers();
+        c.SDL_GL_SwapWindow(self.window);
+        self.clear_buffers();
     }
 };
