@@ -33,5 +33,11 @@ pub fn main() anyerror!void {
                 else => app.handle_inputs(event),
             }
         }
+
+        var frame_allocator = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+        const ticks = c.SDL_GetTicks();
+        app.update(ticks, &frame_allocator.allocator);
+        frame_allocator.deinit();
+        app.reset_inputs();
     }
 }
