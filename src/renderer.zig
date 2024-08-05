@@ -117,4 +117,41 @@ pub const Renderer = struct {
         c.glTexImage2D(c.GL_TEXTURE_2D, 0, c.GL_RED, FONT_TEX_SIZE, FONT_TEX_SIZE, 0, c.GL_RED, c.GL_UNSIGNED_BYTE, &self.typesetter.texture_data[0]);
         c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MIN_FILTER, c.GL_LINEAR);
     }
+
+    fn init_shader_program(self: *Self, vertex_src: []const u8, fragment_src: []const u8, shader_prog: *ShaderData) !void {
+        _ = self;
+        const fs: ?[*]const u8 = fragment_src.ptr;
+        const fragment_shader = c.glCreateShader(c.GL_FRAGMENT_SHADER);
+        c.glShaderSource(fragment_shader, 1, &fs, null);
+        c.glCompileShader(fragment_shader);
+        var compile_success: c_int = undefined;
+        c.glGetShaderiv(fragment_shader, c.GL_COMPILE_STATUS, &compile_success);
+        if (compile_success == 0) {
+            std.debug.print("Fragment shader compilation failed\n", .{});
+            var compile_message: [1024]u8 = undefined;
+            c.glGetShaderInfoLog(fragment_shader, 1024, null, &compile_message[0]);
+            std.debug.print("{s}\n", .{compile_message});
+            return error.FragmentSyntaxError;
+        }
+
+        var vs: ?[*]const u8 = vertex_src.ptr;
+        const vertex_shader = c.glCreateShader(c.GL_VERTEX_SHADER);
+        c.glShaderSource(vertex_shader, 1, &vs, null);
+        c.glCompileShader(vertex_shader);
+        c.glGetShaderiv(vertex_shader, c.GL_COMPILE_STATUS, &compile_success);
+        if (compile_success == 0) {
+            std.debug.print("Vertex shader compilation failed\n", .{});
+            var compile_message: [1024]u8 = undefined;
+            c.glGetShaderInfoLog(vertex_shader, 1024, null, &compile_message[0]);
+            std.debug.print("{s}\n", .{compile_message});
+            return error.VertexSyntaxError;
+        }
+
+        shader_prog.program = c.glCreateProgram();
+        c.glAttachShader(shader_prog.program, vertex_shader);
+        c.glAttachShader(shader_prog.program, fragment_shader);
+        c.glLinkProgram(shader_prog.program);
+        c.glDeleteShader(vertex_shader);
+        c.glDeleteShader(fragment_shader);
+    }
 };
