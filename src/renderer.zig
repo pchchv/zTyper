@@ -240,4 +240,20 @@ pub const Renderer = struct {
             self.text_shader.indices.appendSlice(indices[0..6]) catch unreachable;
         }
     }
+
+    /// First, it saves all positions in screen coordinates and then batch converts them to gl coordinates.
+    fn screen_pixel_to_gl(self: *Self, screen_pos: Vector2, screen_size: Vector2, z: f32) Vector3_gl {
+        _ = z;
+        const x = ((screen_pos.x / screen_size.x) * 2.0) - 1.0;
+        const y = 1.0 - ((screen_pos.y / screen_size.y) * 2.0);
+        self.z_val -= 0.00001;
+        return .{ .x = x, .y = y, .z = self.z_val };
+    }
+
+    fn clear_buffers(self: *Self) void {
+        self.base_shader.clear_buffers();
+        self.text_shader.clear_buffers();
+        self.typesetter.reset();
+        self.z_val = 0.999;
+    }
 };
