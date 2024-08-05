@@ -10,6 +10,10 @@ const Vector3_gl = helpers.Vector3_gl;
 const Vector4_gl = helpers.Vector4_gl;
 const TypeSetter = glyph_lib.TypeSetter;
 
+const FONT_TEX_SIZE = glyph_lib.FONT_TEX_SIZE;
+const VERTEX_BASE_FILE: [:0]const u8 = @embedFile("../data/shaders/vertex.glsl");
+const FRAGMENT_ALPHA_FILE: [:0]const u8 = @embedFile("../data/shaders/fragment_texalpha.glsl");
+
 const VertexData = struct {
     position: Vector3_gl = .{},
     texCoord: Vector2_gl = .{},
@@ -89,5 +93,28 @@ pub const Renderer = struct {
         self.base_shader.deinit();
         self.text_shader.deinit();
         c.SDL_DestroyWindow(self.window);
+    }
+
+    fn init_gl(self: *Self) !void {
+        c.glGenVertexArrays(1, &self.vao);
+        c.glGenBuffers(1, &self.vbo);
+        c.glGenBuffers(1, &self.ebo);
+        c.glBindVertexArray(self.vao);
+        c.glBindBuffer(c.GL_ARRAY_BUFFER, self.vbo);
+        c.glVertexAttribPointer(0, 3, c.GL_FLOAT, c.GL_FALSE, @sizeOf(VertexData), null);
+        c.glEnableVertexAttribArray(0);
+        c.glVertexAttribPointer(1, 4, c.GL_FLOAT, c.GL_FALSE, @sizeOf(VertexData), @ptrFromInt(@offsetOf(VertexData, "color")));
+        c.glEnableVertexAttribArray(1);
+        c.glVertexAttribPointer(2, 2, c.GL_FLOAT, c.GL_FALSE, @sizeOf(VertexData), @ptrFromInt(@offsetOf(VertexData, "texCoord")));
+        c.glEnableVertexAttribArray(2);
+        try self.init_shader_program(VERTEX_BASE_FILE, FRAGMENT_ALPHA_FILE, &self.base_shader);
+        try self.init_shader_program(VERTEX_BASE_FILE, FRAGMENT_ALPHA_FILE, &self.text_shader);
+    }
+
+    fn init_text_renderer(self: *Self) !void {
+        c.glGenTextures(1, &self.text_shader.texture);
+        c.glBindTexture(c.GL_TEXTURE_2D, self.text_shader.texture);
+        c.glTexImage2D(c.GL_TEXTURE_2D, 0, c.GL_RED, FONT_TEX_SIZE, FONT_TEX_SIZE, 0, c.GL_RED, c.GL_UNSIGNED_BYTE, &self.typesetter.texture_data[0]);
+        c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MIN_FILTER, c.GL_LINEAR);
     }
 };
