@@ -195,4 +195,29 @@ pub const Renderer = struct {
         c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MIN_FILTER, c.GL_NEAREST);
         c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MAG_FILTER, c.GL_NEAREST);
     }
+
+    fn draw_buffers(self: *Self) void {
+        c.glBindFramebuffer(c.GL_FRAMEBUFFER, 0);
+        self.draw_shader_buffers(&self.base_shader);
+        self.fill_text_buffers();
+        self.draw_shader_buffers(&self.text_shader);
+    }
+
+    fn draw_shader_buffers(self: *Self, shader: *ShaderData) void {
+        c.glUseProgram(shader.program);
+        c.glViewport(0, 0, @as(c_int, self.camera.window_size.x), @as(c_int, self.camera.window_size.y));
+        c.glEnable(c.GL_BLEND);
+        c.glBlendFunc(c.GL_SRC_ALPHA, c.GL_ONE_MINUS_SRC_ALPHA);
+        c.glUniform1i(c.glGetUniformLocation(shader.program, "tex"), 0);
+        c.glActiveTexture(c.GL_TEXTURE0);
+        c.glBindTexture(c.GL_TEXTURE_2D, shader.texture);
+        c.glBindVertexArray(self.vao);
+        c.glBindBuffer(c.GL_ARRAY_BUFFER, self.vbo);
+        if (shader.triangle_verts.items.len > 0 and shader.indices.items.len > 0) {
+            c.glBufferData(c.GL_ARRAY_BUFFER, @sizeOf(VertexData) * @as(c_longlong, shader.triangle_verts.items.len), &shader.triangle_verts.items[0], c.GL_DYNAMIC_DRAW);
+            c.glBindBuffer(c.GL_ELEMENT_ARRAY_BUFFER, self.ebo);
+            c.glBufferData(c.GL_ELEMENT_ARRAY_BUFFER, @sizeOf(c_uint) * @as(c_longlong, shader.indices.items.len), &shader.indices.items[0], c.GL_DYNAMIC_DRAW);
+            c.glDrawElements(c.GL_TRIANGLES, @as(c_int, shader.indices.items.len), c.GL_UNSIGNED_INT, null);
+        }
+    }
 };
