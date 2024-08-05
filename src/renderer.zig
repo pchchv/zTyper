@@ -2,6 +2,7 @@ const std = @import("std");
 const c = @import("c.zig");
 const helpers = @import("helpers.zig");
 const glyph_lib = @import("glyphee.zig");
+const constants = @import("constants.zig");
 
 const Camera = helpers.Camera;
 const Vector2_gl = helpers.Vector2_gl;
@@ -57,4 +58,36 @@ pub const Renderer = struct {
     renderer: *c.SDL_Renderer,
     gl_context: c.SDL_GLContext,
     allocator: *std.mem.Allocator,
+
+    pub fn init(typesetter: *TypeSetter, camera: *Camera, allocator: *std.mem.Allocator, window_title: []const u8) !Self {
+        _ = c.SDL_GL_SetAttribute(c.SDL_GL_MULTISAMPLESAMPLES, 16);
+        _ = c.SDL_GL_SetAttribute(c.SDL_GL_CONTEXT_PROFILE_MASK, c.SDL_GL_CONTEXT_PROFILE_CORE);
+        _ = c.SDL_GL_SetAttribute(c.SDL_GL_CONTEXT_MAJOR_VERSION, 3); // OpenGL 3+
+        _ = c.SDL_GL_SetAttribute(c.SDL_GL_CONTEXT_MINOR_VERSION, 3); // OpenGL 3.3
+        const window = c.SDL_CreateWindow(window_title.ptr, c.SDL_WINDOWPOS_CENTERED, c.SDL_WINDOWPOS_CENTERED, @as(c_int, constants.DEFAULT_WINDOW_WIDTH * camera.window_scale), @as(c_int, constants.DEFAULT_WINDOW_HEIGHT * camera.window_scale), c.SDL_WINDOW_OPENGL).?;
+        const gl_context = c.SDL_GL_CreateContext(window);
+        _ = c.SDL_GL_MakeCurrent(window, gl_context);
+        _ = c.gladLoadGLLoader(@ptrCast(c.GLADloadproc), @ptrCast(c.SDL_GL_GetProcAddress));
+        var self = Self{
+            .window = window,
+            .renderer = undefined,
+            .gl_context = gl_context,
+            .allocator = allocator,
+            .base_shader = ShaderData.init(allocator),
+            .text_shader = ShaderData.init(allocator),
+            .camera = camera,
+            .typesetter = typesetter,
+        };
+        try self.init_gl();
+        try self.init_main_texture();
+        try self.init_text_renderer();
+        self.typesetter.free_texture_data();
+        return self;
+    }
+
+    pub fn deinit(self: *Self) void {
+        self.base_shader.deinit();
+        self.text_shader.deinit();
+        c.SDL_DestroyWindow(self.window);
+    }
 };
