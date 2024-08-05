@@ -5,11 +5,13 @@ const glyph_lib = @import("glyphee.zig");
 const constants = @import("constants.zig");
 
 const Camera = helpers.Camera;
+const Vector2 = helpers.Vector2;
 const Vector2_gl = helpers.Vector2_gl;
 const Vector3_gl = helpers.Vector3_gl;
 const Vector4_gl = helpers.Vector4_gl;
 const TypeSetter = glyph_lib.TypeSetter;
 
+const CIRCLE_TEXTURE_SIZE = 512;
 const FONT_TEX_SIZE = glyph_lib.FONT_TEX_SIZE;
 const VERTEX_BASE_FILE: [:0]const u8 = @embedFile("../data/shaders/vertex.glsl");
 const FRAGMENT_ALPHA_FILE: [:0]const u8 = @embedFile("../data/shaders/fragment_texalpha.glsl");
@@ -153,5 +155,44 @@ pub const Renderer = struct {
         c.glLinkProgram(shader_prog.program);
         c.glDeleteShader(vertex_shader);
         c.glDeleteShader(fragment_shader);
+    }
+
+    /// Generates a circle texture that is used to draw filled circles.
+    fn init_main_texture(self: *Self) !void {
+        const temp_bitmap = try self.allocator.alloc(u8, CIRCLE_TEXTURE_SIZE * CIRCLE_TEXTURE_SIZE);
+        defer self.allocator.free(temp_bitmap);
+        // Circle texture leaves one pixel at the 0,0 point as filled,
+        // so all other fills can use that pixel.
+        var i: usize = 0;
+        var j: usize = 0;
+        // First, temp_bitmap is initialized to 0.
+        while (i < CIRCLE_TEXTURE_SIZE) : (i += 1) {
+            j = 0;
+            while (j < CIRCLE_TEXTURE_SIZE) : (j += 1) {
+                temp_bitmap[(i * CIRCLE_TEXTURE_SIZE) + j] = 0;
+            }
+        }
+
+        i = 1;
+        temp_bitmap[0] = 255;
+        const radius: usize = (CIRCLE_TEXTURE_SIZE - 1) / 2;
+        const center = Vector2.from_usize(radius, radius);
+        while (i < CIRCLE_TEXTURE_SIZE) : (i += 1) {
+            j = 1;
+            while (j < CIRCLE_TEXTURE_SIZE) : (j += 1) {
+                const current = Vector2.from_usize(i - 1, j - 1);
+                if (Vector2.distance(center, current) <= @as(f32, radius)) {
+                    temp_bitmap[(i * CIRCLE_TEXTURE_SIZE) + j] = 255;
+                } else {
+                    temp_bitmap[(i * CIRCLE_TEXTURE_SIZE) + j] = 0;
+                }
+            }
+        }
+
+        c.glGenTextures(1, &self.base_shader.texture);
+        c.glBindTexture(c.GL_TEXTURE_2D, self.base_shader.texture);
+        c.glTexImage2D(c.GL_TEXTURE_2D, 0, c.GL_RED, CIRCLE_TEXTURE_SIZE, CIRCLE_TEXTURE_SIZE, 0, c.GL_RED, c.GL_UNSIGNED_BYTE, &temp_bitmap[0]);
+        c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MIN_FILTER, c.GL_NEAREST);
+        c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MAG_FILTER, c.GL_NEAREST);
     }
 };
