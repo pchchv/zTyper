@@ -32,4 +32,9 @@ const ShaderData = struct {
         self.triangle_verts.deinit();
         self.indices.deinit();
     }
+
+    pub fn clear_buffers(self: *Self) void {
+        self.triangle_verts.shrinkRetainingCapacity(0);
+        self.indices.shrinkRetainingCapacity(0);
+    }
 };
