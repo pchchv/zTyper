@@ -1,5 +1,6 @@
 const std = @import("std");
 const c = @import("c.zig");
+const App = @import("app.zig").App;
 
 pub fn main() anyerror!void {
     var gpa = std.heap.GeneralPurposeAllocator(.{ .safety = true }){};
@@ -19,4 +20,8 @@ pub fn main() anyerror!void {
 
     var loading_arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     loading_arena.deinit();
+
+    var app = App.new(&gpa.allocator, &loading_arena.allocator);
+    try app.init();
+    defer app.deinit();
 }
