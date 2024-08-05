@@ -24,4 +24,14 @@ pub fn main() anyerror!void {
     var app = App.new(&gpa.allocator, &loading_arena.allocator);
     try app.init();
     defer app.deinit();
+
+    var event: c.SDL_Event = undefined;
+    while (!app.quit) {
+        while (c.SDL_PollEvent(&event) != 0) {
+            switch (event.type) {
+                c.SDL_QUIT => app.quit = true,
+                else => app.handle_inputs(event),
+            }
+        }
+    }
 }
