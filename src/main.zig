@@ -15,15 +15,14 @@ pub fn main() anyerror!void {
     defer c.SDL_Quit();
 
     const start_ticks = c.SDL_GetTicks();
-    const init_ticks = c.SDL_GetTicks();
-    std.debug.print("app init complete in {d} ticks\n", .{init_ticks - start_ticks});
 
     var loading_arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    loading_arena.deinit();
-
     var app = App.new(&gpa.allocator, &loading_arena.allocator);
     try app.init();
     defer app.deinit();
+    loading_arena.deinit();
+    const init_ticks = c.SDL_GetTicks();
+    std.debug.print("app init complete in {d} ticks\n", .{init_ticks - start_ticks});
 
     var event: c.SDL_Event = undefined;
     while (!app.quit) {
