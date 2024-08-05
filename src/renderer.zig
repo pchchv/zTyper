@@ -20,4 +20,16 @@ const ShaderData = struct {
     has_lines: bool = false,
     indices: std.ArrayList(c_uint),
     triangle_verts: std.ArrayList(VertexData),
+
+    pub fn init(allocator: *std.mem.Allocator) Self {
+        return Self{
+            .triangle_verts = std.ArrayList(VertexData).init(allocator),
+            .indices = std.ArrayList(c_uint).init(allocator),
+        };
+    }
+
+    pub fn deinit(self: *Self) void {
+        self.triangle_verts.deinit();
+        self.indices.deinit();
+    }
 };
