@@ -220,4 +220,24 @@ pub const Renderer = struct {
             c.glDrawElements(c.GL_TRIANGLES, @as(c_int, shader.indices.items.len), c.GL_UNSIGNED_INT, null);
         }
     }
+
+    /// Fills text buffers with character data from the typesetter.
+    fn fill_text_buffers(self: *Self) void {
+        var i: usize = 0;
+        while (i < self.typesetter.glyphs.items.len) : (i += 1) {
+            const glyph = self.typesetter.glyphs.items[i];
+            const quad = glyph.quad;
+            const color = glyph.color;
+            const z = glyph.z;
+            const p1 = self.screen_pixel_to_gl(.{ .x = quad.x0, .y = quad.y0 }, self.camera.render_size(), z);
+            const p2 = self.screen_pixel_to_gl(.{ .x = quad.x1, .y = quad.y1 }, self.camera.render_size(), z);
+            const base = @as(c_uint, self.text_shader.triangle_verts.items.len);
+            self.text_shader.triangle_verts.append(.{ .position = p1, .texCoord = .{ .x = quad.s0, .y = quad.t0 }, .color = color }) catch unreachable;
+            self.text_shader.triangle_verts.append(.{ .position = .{ .x = p2.x, .y = p1.y, .z = 1.0 }, .texCoord = .{ .x = quad.s1, .y = quad.t0 }, .color = color }) catch unreachable;
+            self.text_shader.triangle_verts.append(.{ .position = p2, .texCoord = .{ .x = quad.s1, .y = quad.t1 }, .color = color }) catch unreachable;
+            self.text_shader.triangle_verts.append(.{ .position = .{ .x = p1.x, .y = p2.y, .z = 1.0 }, .texCoord = .{ .x = quad.s0, .y = quad.t1 }, .color = color }) catch unreachable;
+            const indices = [_]c_uint{ base + 0, base + 1, base + 3, base + 1, base + 2, base + 3 };
+            self.text_shader.indices.appendSlice(indices[0..6]) catch unreachable;
+        }
+    }
 };
